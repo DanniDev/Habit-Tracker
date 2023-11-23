@@ -28,7 +28,7 @@ export default function LoginPage() {
 		if (status !== 'loading' && session !== null) {
 			router.push(redirectUrl!, { scroll: false });
 		}
-	}, [status, session]);
+	}, [status, session, redirectUrl]);
 
 	const [loading, setLoading] = useState(false);
 	const [userInput, setUserInput] = useState({
@@ -68,6 +68,8 @@ export default function LoginPage() {
 			setLoading(false);
 			toast.success('You have successfully logged in');
 		}
+
+		console.log(res)
 	};
 
 	return (
@@ -178,7 +180,7 @@ export default function LoginPage() {
 				</form>
 			</div>
 			<p className='mt-2 text-center text-sm text-gray-500'>
-				Don't have an account?{' '}
+			Don&apos;t have an account?{' '}
 				<Link
 					href='/account/signup'
 					className='font-semibold leading-6 text-[#52cca5] hover:text-[#49bb97]'

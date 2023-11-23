@@ -88,7 +88,8 @@ export default function MainWrapper() {
 								habits !== undefined &&
 								habits.length > 0 ? (
 									runningHabits.map((habit) => (
-										<HabitItem key={uuidV4() + habit._id} habit={habit} />
+										// <HabitItem key={uuidV4() + habit._id} habit={habit} />
+										"hello"
 									))
 								) : (
 									<LoadingSpinner loading={statusState === 'pending'} />

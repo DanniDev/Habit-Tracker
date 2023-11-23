@@ -1,10 +1,9 @@
 import React, { ChangeEvent, useState, useRef, useEffect } from 'react';
-import TableItem from './TableItem';
+// import TableItem from './TableItem';
 import AddHabitModal from './AddHabitModal';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
 import { NewHabitProps, daySelectionTypes } from '../types/habit.model';
 import { IoFitnessSharp } from 'react-icons/io5';
-import { AiOutlineSync } from 'react-icons/ai';
 import { BsFire } from 'react-icons/bs';
 import { RiBarChartFill } from 'react-icons/ri';
 import axios from 'axios';
@@ -368,26 +367,31 @@ const Dashboard = () => {
 								<tbody>
 									{isTyping &&
 										searchedHabits.length > 0 &&
-										searchedHabits.map((habit) => (
-											<TableItem
-												onDeleteHandler={(event) => onHabitDelete([habit._id])}
-												onCheckedHandler={() => handleCheckChange(habit._id)}
-												isChecked={habit.checked!}
-												key={habit._id}
-												habit={habit}
-											/>
-										))}
+										// searchedHabits.map((habit) => (
+											// <TableItem
+											// 	onDeleteHandler={(event) => onHabitDelete([habit._id])}
+											// 	onCheckedHandler={() => handleCheckChange(habit._id)}
+											// 	isChecked={habit.checked!}
+											// 	key={habit._id}
+											// 	habit={habit}
+											// />
+
+											"Hello"
+										// ))
+										}
 
 									{!isTyping &&
 										completedHabits.length > 0 &&
 										habitListItems.map((habit) => (
-											<TableItem
-												onDeleteHandler={(event) => onHabitDelete([habit._id])}
-												onCheckedHandler={() => handleCheckChange(habit._id)}
-												isChecked={habit.checked!}
-												key={habit._id}
-												habit={habit}
-											/>
+											// <TableItem
+											// 	onDeleteHandler={(event) => onHabitDelete([habit._id])}
+											// 	onCheckedHandler={() => handleCheckChange(habit._id)}
+											// 	isChecked={habit.checked!}
+											// 	key={habit._id}
+											// 	habit={habit}
+											// />
+
+											"Hello"
 										))}
 								</tbody>
 							</table>
