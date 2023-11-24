@@ -2,9 +2,9 @@ import Habit from "@/app/model/habitModel";
 import { connectDB } from "@/lib/mongodb/db";
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function GET(req:NextRequest) {
+export async function GET(req:NextRequest) {
     if(req.method !== "GET"){
-        return NextResponse.json({message: `Request ${req.method} is not allowed`})
+        return NextResponse.json({message: `Request ${req.method} is not allowed`},{status: 405})
     } else{
         try {
             await connectDB();

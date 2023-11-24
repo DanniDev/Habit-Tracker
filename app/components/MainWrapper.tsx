@@ -7,7 +7,7 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { FaRegFaceDizzy } from 'react-icons/fa6';
 import { toast } from 'react-toastify';
 import { usePathname } from 'next/navigation';
-import Sidenav from './Sidenav';
+import Sidenav from './Sidebar';
 import HabitItem from './HabitItem';
 import AddHabitModal from './AddHabitModal';
 import Dashboard from './Dashboard';
@@ -68,7 +68,7 @@ export default function MainWrapper() {
 
 	return (
 		<>
-			<div className='mx-auto bg-[#f0f0f0] w-full pb-3 pt-0 p-6 pl-4 overflow-x-auto fixed'>
+			<div className='mx-auto bg-[#f0f0f0] w-full pt-0 p-6 pl-0 pr-2 pb-0 overflow-x-auto fixed relative'>
 				<Sidenav />
 				<div className='pl-[170px] '>
 					<div className='p-10 pt-6 px-4 h-screen  min-w-[1080px] w-full overflow-y-auto pb-[10px]'>
@@ -83,7 +83,7 @@ export default function MainWrapper() {
 									</h1>
 									<AddHabitModal />
 								</div>
-								{!loading &&
+								{/* {!loading &&
 								!error &&
 								habits !== undefined &&
 								habits.length > 0 ? (
@@ -93,9 +93,9 @@ export default function MainWrapper() {
 									))
 								) : (
 									<LoadingSpinner loading={statusState === 'pending'} />
-								)}
+								)} */}
 
-								{!loading &&
+								{/* {!loading &&
 									runningHabits !== undefined &&
 									runningHabits.length < 1 && (
 										<div className='absolute bg-slate-50 rounded-md px-5 py-8 w-full max-w-md text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
@@ -108,7 +108,7 @@ export default function MainWrapper() {
 											</p>
 											<AddHabitModal />
 										</div>
-									)}
+									)} */}
 							</>
 						)}
 					</div>

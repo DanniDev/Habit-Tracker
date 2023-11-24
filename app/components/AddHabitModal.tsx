@@ -15,7 +15,7 @@ export default function AddHabitModal() {
 
 	return (
 		<>
-			<div className='relative inset-0 flex items-center justify-center'>
+			<div className='relative inset-0 flex items-center justify-center z-[999]'>
 				<button
 					type='button'
 					onClick={openModal}
@@ -42,7 +42,7 @@ export default function AddHabitModal() {
 			</div>
 
 			<Transition appear show={isOpen} as={Fragment}>
-				<Dialog as='div' className='relative z-10' onClose={closeModal}>
+				<Dialog as='div' className='relative z-[999]' onClose={closeModal}>
 					<Transition.Child
 						as={Fragment}
 						enter='ease-out duration-300'
@@ -67,7 +67,7 @@ export default function AddHabitModal() {
 								leaveTo='opacity-0 scale-95'
 							>
 								<Dialog.Panel className='w-full max-w-[460px] transform overflow-hidden rounded-2xl bg-white p-6 pt-0 text-left align-middle shadow-xl transition-all'>
-									<Form onModalClose={closeModal} />
+									<Form  />
 
 									<div className='mt-1 absolute top-0 right-3'>
 										<button

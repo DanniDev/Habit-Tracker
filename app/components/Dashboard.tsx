@@ -226,7 +226,7 @@ const Dashboard = () => {
 	};
 
 	return (
-		<div>
+		<div className='pl-4'>
 			<div className='flex justify-between items-center mb-6'>
 				<h1 className='text-gray-900 font-bold text-[26px]'>Dashboard</h1>
 				<AddHabitModal />
