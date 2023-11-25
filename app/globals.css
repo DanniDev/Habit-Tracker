@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.active-link .link-icon{
-    color: #fff !important;
+.active-link .link-icon {
+  color: #fff !important;
 }
