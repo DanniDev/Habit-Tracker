@@ -17,7 +17,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { MdDone } from "react-icons/md";
-import TableItem from "./TableItem";
+import TableItem from "./TableListItem";
 
 const Dashboard = () => {
   let pathname = usePathname();

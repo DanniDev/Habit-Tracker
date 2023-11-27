@@ -8,7 +8,7 @@ import { FaRegFaceDizzy } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import { usePathname } from "next/navigation";
 import Sidenav from "./Sidebar";
-import HabitItem from "./HabitItem";
+import HabitItem from "./HabitListItem";
 import AddHabitModal from "./AddHabitModal";
 import Dashboard from "./Dashboard";
 import { useSession } from "next-auth/react";
@@ -88,27 +88,26 @@ export default function MainWrapper() {
                 habits !== undefined &&
                 habits.length > 0 ? (
                   runningHabits.map((habit) => (
-                    // <HabitItem key={uuidV4() + habit._id} habit={habit} />
                     <HabitItem key={uuidV4() + habit._id} habit={habit} />
                   ))
                 ) : (
                   <LoadingSpinner loading={statusState === "pending"} />
                 )}
 
-                {/* {!loading &&
-									runningHabits !== undefined &&
-									runningHabits.length < 1 && (
-										<div className='absolute bg-slate-50 rounded-md px-5 py-8 w-full max-w-md text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-											<FaRegFaceDizzy
-												size='50'
-												className='text-center text-red-600 mx-auto mb-3'
-											/>
-											<p className='mb-4 text-gray-700'>
-												You currently have no habit to track!
-											</p>
-											<AddHabitModal />
-										</div>
-									)} */}
+                {!loading &&
+                  runningHabits !== undefined &&
+                  runningHabits.length < 1 && (
+                    <div className="absolute bg-slate-50 rounded-md px-5 py-8 w-full max-w-md text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                      <FaRegFaceDizzy
+                        size="50"
+                        className="text-center text-red-600 mx-auto mb-3"
+                      />
+                      <p className="mb-4 text-gray-700">
+                        You currently have no habit to track!
+                      </p>
+                      <AddHabitModal />
+                    </div>
+                  )}
               </>
             )}
           </div>

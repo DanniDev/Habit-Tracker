@@ -2,7 +2,7 @@ import React from "react";
 import { NewHabitProps } from "../types/habit.model";
 import { MdDelete } from "react-icons/md";
 
-export default function TableItem(props: {
+export default function TableListItem(props: {
   isChecked: boolean;
   deleteHabitHandler: (id: string) => void;
   habit: NewHabitProps;

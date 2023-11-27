@@ -3,7 +3,7 @@ import { NewHabitProps } from "../types/habit.model";
 import clsx from "clsx";
 import { getCurrentDate } from "../util/helpers";
 
-export default function MonthItem(props: {
+export default function MonthListItem(props: {
   keyId: string;
   month: string;
   habit: NewHabitProps;

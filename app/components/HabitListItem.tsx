@@ -5,10 +5,10 @@ import { RiLoopRightLine } from "react-icons/ri";
 import { GrAchievement } from "react-icons/gr";
 import Dropdown from "./Dropdown";
 import { v4 as uuidV4 } from "uuid";
-import MonthItem from "./MonthItem";
+import MonthItem from "./MonthListItem";
 import { getCurrentDate } from "../util/helpers";
 
-export default function HabitItem(props: { habit: NewHabitProps }) {
+export default function HabitListItem(props: { habit: NewHabitProps }) {
   const habit = props.habit;
 
   const [thisMonth, today, currentYear] = getCurrentDate();
