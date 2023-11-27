@@ -3,7 +3,7 @@ import React from "react";
 export default function Form() {
   return (
     <div className="bg-[#F9FAFB] py-12 pb-6">
-      <h1 className=" text-3xl mb-6 font-medium leading-6 text-gray-900">
+      <h1 className=" text-[26px] mb-6 font-bold leading-6 text-gray-900">
         Add Habit
       </h1>
       <form className="space-y-6">
@@ -51,7 +51,7 @@ export default function Form() {
         <div>
           <button
             type="submit"
-            className="flex w-full max-w-[8rem] justify-center rounded-full px-3 py-2 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#52cca5] bg-[#52cca5] hover:bg-[#49bb97]"
+            className="flex w-full max-w-[8rem] justify-center rounded-md px-3 py-2 text-sm font-medium leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#52cca5] bg-[#52cca5] hover:bg-[#49bb97]"
           >
             Submit
           </button>
