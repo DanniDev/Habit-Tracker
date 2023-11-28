@@ -2,6 +2,10 @@ import React from "react";
 import { NewHabitProps } from "../types/habit.model";
 import clsx from "clsx";
 import { getCurrentDate } from "../util/helpers";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { setStatus, updateHabit } from "@/lib/redux/slices/habitSlice";
+import { useAppDispatch } from "@/lib/redux/hook";
 
 export default function MonthListItem(props: {
   keyId: string;
@@ -9,13 +13,66 @@ export default function MonthListItem(props: {
   habit: NewHabitProps;
   monthsInYear: string[];
 }) {
+  const dispatch = useAppDispatch();
+
   const [thisMonth, today, currentYear] = getCurrentDate();
 
   const { habit, month, monthsInYear } = props;
 
-  const onCheckedHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { checked } = event.target;
-    console.log(checked);
+  const onDayUpdateHandler = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { id: checkedMonth, name, checked } = event.target;
+    const dayChecked = parseInt(name);
+    const currentMonth = thisMonth.slice(0, 3).toLocaleLowerCase();
+
+    if (currentMonth === checkedMonth) {
+      if (dayChecked === today) {
+        dispatch(setStatus("onUpdateHabitPending"));
+
+        try {
+          const res = await axios.put(
+            "/api/habits",
+            JSON.stringify({
+              month: checkedMonth,
+              dayChecked,
+              habitId: habit._id,
+              isCompleted: false,
+              isChecked: checked,
+            })
+          );
+
+          const {
+            data: { updatedHabit },
+          } = res;
+
+          dispatch(setStatus("onUpdateHabitSuccess"));
+          dispatch(updateHabit(updatedHabit));
+          toast.success("Habit updated successfully!");
+        } catch (error: any) {
+          toast.error("Something went wrong!");
+          dispatch(setStatus("onUpdateHabitFailed"));
+        }
+      } else if (dayChecked > today) {
+        const elapsedDays = dayChecked - today;
+        toast.error(
+          `Oops, that's ${
+            elapsedDays === 1
+              ? 1 + " " + "day ahead!"
+              : elapsedDays + " " + "days ahead!"
+          }`
+        );
+      } else if (dayChecked < today) {
+        const pastDays = today - dayChecked;
+        toast.error(
+          `Oops, that's ${
+            pastDays === 1 ? 1 + " " + "day ago!" : pastDays + " " + "days ago!"
+          }`
+        );
+      }
+    } else {
+      toast.error("Oops, Checking Invalid month!");
+    }
   };
 
   const setPastDaysBackground = (monthDay: {
@@ -45,10 +102,10 @@ export default function MonthListItem(props: {
                 className="flex items-center check-wrapper relative"
               >
                 <input
-                  // checked={props.completed}
-                  // id={props.habitId}
-                  // name={props.day.toString()}
-                  onChange={onCheckedHandler}
+                  checked={day.isChecked}
+                  id={el.month.toLowerCase()}
+                  name={day.day.toString()}
+                  onChange={onDayUpdateHandler}
                   type="checkbox"
                   className="cursor-pointer border-0 outline-none opacity-1 absolute h-5 w-5 rounded-full appearance-none"
                 />

@@ -3,8 +3,61 @@ import { Fragment } from "react";
 import { MdDelete } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { useAppDispatch } from "@/lib/redux/hook";
+import {
+  deleteHabit,
+  setStatus,
+  updateHabit,
+} from "@/lib/redux/slices/habitSlice";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-export default function Dropdown() {
+export default function Dropdown(props: { habitId: string }) {
+  const dispatch = useAppDispatch();
+
+  const onMarkHabitComplete = async () => {
+    dispatch(setStatus("onUpdateHabitPending"));
+
+    try {
+      const res = await axios.put(
+        "/api/habits",
+        JSON.stringify({ habitId: props.habitId, isCompleted: true })
+      );
+
+      const {
+        data: { updatedHabit },
+      } = res;
+
+      dispatch(setStatus("onUpdateHabitSuccess"));
+      dispatch(updateHabit(updatedHabit));
+      toast.success("Amazing! let's get another done");
+    } catch (error: any) {
+      console.log(error.message);
+      dispatch(setStatus("onUpdateHabitFailed"));
+      toast.success("Something went wrong!");
+    }
+  };
+
+  const onHabitDelete = async () => {
+    dispatch(setStatus("onDeleteHabitPending"));
+    try {
+      const res = await axios.delete("/api/habits", {
+        data: JSON.stringify({ habitId: [props.habitId] }),
+      });
+
+      const { data } = res;
+
+      dispatch(deleteHabit(data.deletedHabitIds));
+      dispatch(setStatus("onDeleteHabitSuccess"));
+
+      toast.success("Habit successfully deleted!");
+    } catch (error: any) {
+      dispatch(setStatus("onDeleteHabitFailed"));
+      console.log(error.message);
+      toast.error("Failed to delete!");
+    }
+  };
+
   return (
     <div className="w-56 text-right">
       <Menu as="div" className="relative inline-block text-left">
@@ -30,6 +83,7 @@ export default function Dropdown() {
               <Menu.Item>
                 {({ active }) => (
                   <button
+                    onClick={onMarkHabitComplete}
                     className={`${
                       active ? "bg-[#52cca5] text-white" : "text-gray-900"
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
@@ -54,6 +108,7 @@ export default function Dropdown() {
               <Menu.Item>
                 {({ active }) => (
                   <button
+                    onClick={onHabitDelete}
                     className={`${
                       active ? "bg-red-400 text-white" : "text-gray-900"
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm`}

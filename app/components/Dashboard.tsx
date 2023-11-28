@@ -53,8 +53,6 @@ const Dashboard = () => {
         dispatch(setStatus("idle"));
         setLoading(false);
 
-        console.log("HABITS FOUND", foundHabits);
-
         JSON.stringify(localStorage.setItem("habits", data.data));
         return;
       } catch (error: any) {

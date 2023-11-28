@@ -5,56 +5,11 @@ import { RiLoopRightLine } from "react-icons/ri";
 import { GrAchievement } from "react-icons/gr";
 import Dropdown from "./Dropdown";
 import { v4 as uuidV4 } from "uuid";
-import MonthItem from "./MonthListItem";
+import MonthListItem from "./MonthListItem";
 import { getCurrentDate } from "../util/helpers";
 
 export default function HabitListItem(props: { habit: NewHabitProps }) {
   const habit = props.habit;
-
-  const [thisMonth, today, currentYear] = getCurrentDate();
-
-  const calculateStreak = () => {
-    let streak = 0;
-
-    // const daysActivity = ([] as Array<boolean>).concat(
-    //   ...habit.daySelection.map((el) => el.days.map((day) => day.isChecked))
-    // );
-    let stopPushing = false;
-    const daysActivity = ([] as Array<boolean>).concat(
-      ...habit.daySelection.map((el) => {
-        const daysChecked: boolean[] = [];
-
-        for (const day of el.days) {
-          if (
-            el.month.toLowerCase() === thisMonth.slice(0, 3).toLowerCase() &&
-            day.day === today
-          ) {
-            stopPushing = true;
-            break;
-          }
-
-          if (!stopPushing) {
-            daysChecked.push(day.isChecked);
-          }
-        }
-
-        return daysChecked;
-      })
-    );
-
-    for (const isChecked of daysActivity) {
-      if (isChecked) {
-        streak++;
-      } else {
-        streak = 0;
-      }
-    }
-
-    return streak;
-  };
-
-  const streak = calculateStreak();
-  console.log(streak);
 
   const monthsInYear = [
     "JAN",
@@ -70,6 +25,50 @@ export default function HabitListItem(props: { habit: NewHabitProps }) {
     "NOV",
     "DEC",
   ];
+
+  const [thisMonth, today, currentYear] = getCurrentDate();
+
+  const calculateStreak = () => {
+    let streak = 0;
+
+    let stopPushing = false;
+    const daysActivity = habit
+      ? ([] as Array<boolean>).concat(
+          ...habit.daySelection.map((el) => {
+            const daysChecked: boolean[] = [];
+
+            for (const day of el.days) {
+              if (
+                el.month.toLowerCase() ===
+                  thisMonth.slice(0, 3).toLowerCase() &&
+                day.day === today
+              ) {
+                stopPushing = true;
+                break;
+              }
+
+              if (!stopPushing) {
+                daysChecked.push(day.isChecked);
+              }
+            }
+
+            return daysChecked;
+          })
+        )
+      : [];
+
+    for (const isChecked of daysActivity) {
+      if (isChecked) {
+        streak++;
+      } else {
+        streak = 0;
+      }
+    }
+
+    return streak;
+  };
+
+  const streak = calculateStreak();
 
   return (
     <div className="p-5 rounded-md bg-white mb-8">
@@ -109,14 +108,14 @@ export default function HabitListItem(props: { habit: NewHabitProps }) {
           </div>
         </div>
         <div className="">
-          <Dropdown />
+          <Dropdown habitId={habit._id} />
         </div>
       </div>
 
       <div className="mt-8">
         <div className="grid grid-cols-12 checkbox-grid">
           {monthsInYear.map((month) => (
-            <MonthItem
+            <MonthListItem
               monthsInYear={monthsInYear}
               habit={habit}
               key={uuidV4()}
