@@ -12,12 +12,15 @@ export default function MonthListItem(props: {
   month: string;
   habit: NewHabitProps;
   monthsInYear: string[];
+  setUpdateLoading: (isLoading: boolean) => void;
+  setUpdatingHabitId: (id: string) => void;
 }) {
   const dispatch = useAppDispatch();
 
   const [thisMonth, today, currentYear] = getCurrentDate();
 
-  const { habit, month, monthsInYear } = props;
+  const { habit, month, monthsInYear, setUpdateLoading, setUpdatingHabitId } =
+    props;
 
   const onDayUpdateHandler = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -29,7 +32,8 @@ export default function MonthListItem(props: {
     if (currentMonth === checkedMonth) {
       if (dayChecked === today) {
         dispatch(setStatus("onUpdateHabitPending"));
-
+        setUpdateLoading(true);
+        setUpdatingHabitId(habit._id);
         try {
           const res = await axios.put(
             "/api/habits",
@@ -46,12 +50,16 @@ export default function MonthListItem(props: {
             data: { updatedHabit },
           } = res;
 
+          setUpdateLoading(false);
+          setUpdatingHabitId("");
           dispatch(setStatus("onUpdateHabitSuccess"));
           dispatch(updateHabit(updatedHabit));
           toast.success("Habit updated successfully!");
         } catch (error: any) {
           toast.error("Something went wrong!");
           dispatch(setStatus("onUpdateHabitFailed"));
+          setUpdateLoading(false);
+          setUpdatingHabitId("");
         }
       } else if (dayChecked > today) {
         const elapsedDays = dayChecked - today;
@@ -113,7 +121,7 @@ export default function MonthListItem(props: {
                   className={clsx(
                     "border-gray-400 w-5 h-5 border-[1.5px] rounded-full hover:bg-gray-400",
                     {
-                      "bg-green-600": day.isChecked,
+                      "bg-[#52cca5]": day.isChecked,
                       "bg-gray-600":
                         setPastDaysBackground(day) ||
                         (monthsInYear.indexOf(month) <

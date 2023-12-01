@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { NewHabitProps } from "../types/habit.model";
 import { GiStairsGoal } from "react-icons/gi";
 import { RiLoopRightLine } from "react-icons/ri";
 import { GrAchievement } from "react-icons/gr";
+import PulseLoader from "react-spinners/PulseLoader";
 import Dropdown from "./Dropdown";
 import { v4 as uuidV4 } from "uuid";
 import MonthListItem from "./MonthListItem";
 import { getCurrentDate } from "../util/helpers";
 
 export default function HabitListItem(props: { habit: NewHabitProps }) {
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [updatingHabitId, setUpdatingHabitId] = useState("");
+
   const habit = props.habit;
 
   const monthsInYear = [
@@ -71,7 +75,7 @@ export default function HabitListItem(props: { habit: NewHabitProps }) {
   const streak = calculateStreak();
 
   return (
-    <div className="p-5 rounded-md bg-white mb-8">
+    <div className="p-5 rounded-md bg-white mb-4">
       <div className="flex items-center justify-between">
         <h2 className="font-bold text-lg">{habit.title}</h2>
         <div className="flex items-center">
@@ -121,8 +125,15 @@ export default function HabitListItem(props: { habit: NewHabitProps }) {
               key={uuidV4()}
               keyId={uuidV4()}
               month={month}
+              setUpdateLoading={setUpdateLoading}
+              setUpdatingHabitId={setUpdatingHabitId}
             />
           ))}
+        </div>
+        <div className="pt-3 text-center">
+          {updatingHabitId === habit._id && updateLoading && (
+            <PulseLoader color={"#52cca5"} loading={updateLoading} size={15} />
+          )}
         </div>
       </div>
     </div>

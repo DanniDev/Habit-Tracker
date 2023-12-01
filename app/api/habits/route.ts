@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   const reqBody = await req.json();
   let response;
-  // console.log(reqBody);
+  console.log(reqBody);
 
   let { month, dayChecked, isChecked, isCompleted, habitId } = reqBody;
 
@@ -132,7 +132,7 @@ export async function PUT(req: NextRequest) {
           { new: true }
         );
 
-        response = NextResponse.json(
+        return NextResponse.json(
           { success: true, updatedHabit },
           { status: 200 }
         );
@@ -145,7 +145,8 @@ export async function PUT(req: NextRequest) {
 
           const remainingChar = month.slice(1);
 
-          month = firstChar + remainingChar;
+          // month = firstChar + remainingChar;
+          month = month.toUpperCase();
 
           const achieved = calculateAchievement(
             foundHabit.daySelection,
@@ -169,20 +170,17 @@ export async function PUT(req: NextRequest) {
               new: true,
             }
           );
-
-          response = NextResponse.json(
+          return NextResponse.json(
             { success: true, updatedHabit },
             { status: 200 }
           );
         } else {
-          response = NextResponse.json(
+          return NextResponse.json(
             { success: false, message: "Habit not found!" },
             { status: 404 }
           );
         }
       }
-
-      return response;
     } catch (error: any) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
