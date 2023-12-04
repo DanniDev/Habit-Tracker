@@ -4,9 +4,11 @@ import { useAppDispatch } from "@/lib/redux/hook";
 import { addHabit, setError, setStatus } from "@/lib/redux/slices/habitSlice";
 import { toast } from "react-toastify";
 import ClipLoader from "react-spinners/ClipLoader";
+import { useSession } from "next-auth/react";
 
 export default function Form(props: { closeModal: () => void }) {
   const dispatch = useAppDispatch();
+  const { data: session } = useSession();
 
   const [goal, setGoal] = useState<number>(15);
   const [title, setTitle] = useState<string>("");
@@ -23,6 +25,7 @@ export default function Form(props: { closeModal: () => void }) {
         JSON.stringify({
           title,
           goal,
+          userEmail: session?.user.email,
         })
       );
 
@@ -49,14 +52,14 @@ export default function Form(props: { closeModal: () => void }) {
       </h1>
       <form onSubmit={onSubmitHandler} className="space-y-6">
         <div className="flex items-center">
-          <div className="mt-2">
+          <div className="mt-2 w-1/2">
             <input
               onChange={(e) => setTitle(e.target.value)}
               name="habitText"
               type="text"
               required
               placeholder="Enter habit..."
-              className="pl-3 py-3 rounded-lg border-0  text-gray-900 shadow-sm ring-[1px] ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-[1px] focus:ring-inset focus:ring-gray-300 sm:text-sm sm:leading-6"
+              className="w-full pl-3 py-3 rounded-lg border-0  text-gray-900 shadow-sm ring-[1px] ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-[1px] focus:ring-inset focus:ring-gray-300 sm:text-sm sm:leading-6"
             />
           </div>
           <div className="mt-2 ml-2">

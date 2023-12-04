@@ -1,3 +1,4 @@
+import User from "@/app/model/UserModel";
 import Habit from "@/app/model/habitModel";
 import { NewHabitProps, daySelectionTypes } from "@/app/types/habit.model";
 import { calculateAchievement, getCurrentDate } from "@/app/util/helpers";
@@ -5,6 +6,9 @@ import { connectDB } from "@/lib/mongodb/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const userEmail = searchParams.get("user");
+
   if (req.method !== "GET") {
     return NextResponse.json(
       { message: `Request ${req.method} is not allowed` },
@@ -13,12 +17,19 @@ export async function GET(req: NextRequest) {
   } else {
     try {
       await connectDB();
+      const foundAuthor = await User.findOne({ email: userEmail });
 
-      const habits = await Habit.find({});
+      if (foundAuthor) {
+        const habits = await Habit.find({ user: foundAuthor._id });
 
+        return NextResponse.json(
+          { success: true, data: habits },
+          { status: 200 }
+        );
+      }
       return NextResponse.json(
-        { success: true, data: habits },
-        { status: 200 }
+        { success: false, data: [], message: "Author not found" },
+        { status: 404 }
       );
     } catch (error: any) {
       return NextResponse.json({ message: error.message }, { status: 500 });
@@ -33,7 +44,7 @@ export async function POST(req: NextRequest) {
     );
   } else {
     const reqBody = await req.json();
-    const { title, goal } = reqBody;
+    const { title, goal, userEmail } = reqBody;
 
     const [_, today, yearCreated] = getCurrentDate();
 
@@ -79,16 +90,21 @@ export async function POST(req: NextRequest) {
     };
     const daySelection = generateDaySelection();
 
+    const author = await User.findOne({ email: userEmail });
+
     const newHabit = new Habit({
       title,
       goal,
       achieved: 0,
+      user: author._id,
       isCompleted: false,
       completedAt: null,
       checked: false,
       yearCreated,
       daySelection,
     });
+
+    console.log("author", newHabit);
 
     try {
       await connectDB();
@@ -104,8 +120,6 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const reqBody = await req.json();
-  let response;
-  console.log(reqBody);
 
   let { month, dayChecked, isChecked, isCompleted, habitId } = reqBody;
 

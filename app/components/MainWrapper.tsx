@@ -38,7 +38,7 @@ export default function MainWrapper() {
     async function fetchHabits() {
       dispatch(setStatus("pending"));
       try {
-        const res = await fetch("/api/habits");
+        const res = await fetch(`/api/habits?user=${session?.user.email}`);
 
         const data = await res.json();
         const foundHabits: NewHabitProps[] = data.data;
@@ -64,11 +64,11 @@ export default function MainWrapper() {
     if (status === "unauthenticated" && !session) {
       router.push("/account/login", { scroll: false });
     }
-  }, [session, status]);
+  }, [session, status, dispatch, router, pathname]);
 
   return (
     <>
-      <div className="mx-auto bg-[#f0f0f0] w-full pt-0 p-6 pl-0 pr-2 pb-0 overflow-x-auto fixed relative">
+      <div className="mx-auto bg-[#f0f0f0] w-full pt-0 p-6 pl-0 pr-2 pb-0 overflow-x-auto fixed ">
         <Sidenav />
         <div className="pl-[170px] ">
           <div className="p-10 pt-6 px-4 pl-8 h-screen  min-w-[1080px] w-full overflow-y-auto pb-[10px]">

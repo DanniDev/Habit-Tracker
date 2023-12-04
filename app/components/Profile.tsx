@@ -2,7 +2,6 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
-import logo2 from "../../../public/images/logo2.png";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
@@ -11,7 +10,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ClipLoader from "react-spinners/ClipLoader";
 import oAuthPopupWindow from "@/app/util/oAuthPopupWindow";
 
-export default function LoginPage() {
+export default function ProfilePage() {
   const router = useRouter();
   const pathname = usePathname();
   let params = useSearchParams();
@@ -20,7 +19,7 @@ export default function LoginPage() {
     ? params
         .get("callbackUrl")
         ?.slice(params.get("callbackUrl")?.lastIndexOf("/"))
-    : "/dashboard";
+    : "/account/user/profile";
 
   const { data: session, status } = useSession();
 
@@ -28,7 +27,7 @@ export default function LoginPage() {
     console.log("sesion", session);
     console.log("status", status);
 
-    if (status !== "loading" && session) {
+    if (status !== "loading" && !session) {
       router.push(redirectUrl!, { scroll: false });
     }
   }, [status, session, redirectUrl, router]);
@@ -83,14 +82,6 @@ export default function LoginPage() {
   return (
     <div className="bg-[#f1f1f1] flex min-h-screen flex-1 flex-col justify-center px-6 py-8 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <Image
-          priority={true}
-          src={logo2.src}
-          width={65}
-          height={65}
-          alt="Habit Mentor"
-          className="mx-auto text-center"
-        />
         <h2 className="mt-0 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Log In
         </h2>

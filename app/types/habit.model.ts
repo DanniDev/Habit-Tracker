@@ -32,6 +32,7 @@ export interface NewHabitProps {
   goal: number;
   achieved: number;
   isCompleted: boolean;
+  user?: string;
   daySelection: {
     month: string;
     days: {
@@ -53,6 +54,7 @@ export interface DailyStatusProps {
 export interface HabitStateProps {
   habits: NewHabitProps[];
   error: string | null;
+  currentPage: number;
   status:
     | "idle"
     | "pending"

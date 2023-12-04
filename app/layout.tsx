@@ -2,6 +2,7 @@ import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./components/AuthProvider";
 import { ToastContainer } from "react-toastify";
+import { EdgeStoreProvider } from "@/lib/edgestore/edgestore";
 
 export const metadata = {
   title: "Habit Tracker",
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ToastContainer />
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <EdgeStoreProvider>{children}</EdgeStoreProvider>
+        </AuthProvider>
       </body>
     </html>
   );

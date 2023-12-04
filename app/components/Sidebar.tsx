@@ -4,7 +4,7 @@ import userPicture from "@/public/images/user.jpg";
 import Image from "next/image";
 import { RxDashboard } from "react-icons/rx";
 import { AiOutlinePieChart } from "react-icons/ai";
-import { MdLogout } from "react-icons/md";
+import { TbLogout } from "react-icons/tb";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
@@ -39,7 +39,7 @@ export default function Sidebar() {
             <Link
               href="/dashboard"
               className={clsx(
-                "font-bold flex items-center p-2 text-gray-900 rounded-lg dark:text-gray-600 dark:hover:bg-[#eaecec] group",
+                "font-bold text-sm flex items-center p-2 text-gray-900 rounded-lg dark:text-gray-600 dark:hover:bg-[#eaecec] group",
                 {
                   "dark:!bg-[#52cca5]":
                     pathname === "/dashboard" || pathname === "/",
@@ -56,7 +56,7 @@ export default function Sidebar() {
             <Link
               href="/habits"
               className={clsx(
-                "font-bold flex items-center p-2 text-gray-900 rounded-lg dark:text-gray-600 dark:hover:bg-[#eaecec] group",
+                "font-bold text-sm flex items-center p-2 text-gray-900 rounded-lg dark:text-gray-600 dark:hover:bg-[#eaecec] group",
                 {
                   "dark:!bg-[#52cca5]": pathname === "/habits",
                   "active-link": pathname === "/habits",
@@ -74,29 +74,33 @@ export default function Sidebar() {
       <div className="absolute bottom-10 left-5">
         <div className="flex items-center space-x-4">
           <div className="flex-shrink-0 w-12 h-12 overflow-hidden rounded-full">
-            <Image
-              width={80}
-              height={80}
-              src={userPicture.src}
-              alt="User Picture"
-              className="object-cover w-full h-full"
-            />
+            <Link href="/account/user/profile">
+              <Image
+                width={80}
+                height={80}
+                src={userPicture.src}
+                alt="User Picture"
+                className="object-cover w-full h-full"
+              />
+            </Link>
           </div>
           <div>
             <div>
-              <h3 className="text-sm font-medium text-gray-800 pb-1 pt-2">
-                Daniel Agyei
-              </h3>
+              <Link href="/account/user/profile">
+                <h3 className="text-sm font-medium text-gray-800 pb-1 pt-2">
+                  Daniel Agyei
+                </h3>
+              </Link>
             </div>
             <button
               onClick={logoutHandler}
               className="flex items-center rounded-md text-red-400 dark:hover:text-red-500 group font-medium"
             >
-              <span className="text-sm pr-2 dark:group-hover:text-red-600">
-                Logout
+              <span className="text-md transition duration-75 dark:group-hover:text-red-600">
+                <TbLogout />
               </span>
-              <span className="text-sm transition duration-75 dark:group-hover:text-red-600">
-                <MdLogout />
+              <span className="text-sm pl-2 dark:group-hover:text-red-600">
+                Logout
               </span>
             </button>
           </div>

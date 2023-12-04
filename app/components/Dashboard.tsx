@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import {
   deleteHabit,
   getHabits,
+  setPage,
   setError,
   setStatus,
 } from "@/lib/redux/slices/habitSlice";
@@ -18,6 +19,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { MdDone } from "react-icons/md";
 import TableItem from "./TableListItem";
+import clsx from "clsx";
 
 const Dashboard = () => {
   let pathname = usePathname();
@@ -38,23 +40,27 @@ const Dashboard = () => {
 
   const habits = useAppSelector((state) => state.habit.habits);
   const status = useAppSelector((state) => state.habit.status);
+  const currentPage = useAppSelector((state) => state.habit.currentPage);
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     async function fetchHabits() {
       dispatch(setStatus("pending"));
       try {
-        const res = await fetch("/api/habits");
+        if (sessionStatus !== "loading" && session) {
+          const res = await fetch(`/api/habits?user=${session?.user.email}`);
 
-        const data = await res.json();
-        const foundHabits: NewHabitProps[] = data.data;
+          const data = await res.json();
+          const foundHabits: NewHabitProps[] = data.data;
 
-        dispatch(getHabits(foundHabits));
-        dispatch(setStatus("idle"));
-        setLoading(false);
+          dispatch(getHabits(foundHabits));
+          dispatch(setStatus("idle"));
+          setLoading(false);
 
-        JSON.stringify(localStorage.setItem("habits", data.data));
-        return;
+          JSON.stringify(localStorage.setItem("habits", data.data));
+          return;
+        }
       } catch (error: any) {
         const errMsg = error.response.data.message;
         toast.error(errMsg);
@@ -63,13 +69,13 @@ const Dashboard = () => {
         setLoading(false);
       }
     }
-    if (pathname.toLocaleLowerCase() === "/dashboard" && session) {
-      fetchHabits();
-    }
-    if (sessionStatus === "unauthenticated" && !session) {
+    if (sessionStatus !== "loading" && !session) {
       router.push("/account/login", { scroll: false });
     }
-  }, [session, sessionStatus]);
+    // if (session) {
+    // }
+    fetchHabits();
+  }, [session, sessionStatus, dispatch, router]);
 
   const completedHabits = habits
     ? habits.filter((habit) => habit.isCompleted)
@@ -228,6 +234,25 @@ const Dashboard = () => {
     }
   };
 
+  // Handle pagination
+  const itemsPerPage = 2;
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentHabits = completedHabits.slice(startIndex, endIndex);
+
+  const totalPages = Math.ceil(completedHabits.length / itemsPerPage);
+
+  console.log("totalpages =>", totalPages);
+
+  const handleNextPage = () => {
+    dispatch(setPage(Math.min(currentPage + 1, totalPages)));
+  };
+
+  const handlePrevPage = () => {
+    dispatch(setPage(Math.max(currentPage - 1, 1)));
+  };
+
   return (
     <div className="">
       <div className="flex justify-between items-center mb-6">
@@ -367,33 +392,10 @@ const Dashboard = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody>
-                  {
-                    isTyping &&
-                      searchedHabits.length > 0 &&
-                      // searchedHabits.map((habit) => (
-                      // <TableItem
-                      // 	onDeleteHandler={(event) => onHabitDelete([habit._id])}
-                      // 	onCheckedHandler={() => handleCheckChange(habit._id)}
-                      // 	isChecked={habit.checked!}
-                      // 	key={habit._id}
-                      // 	habit={habit}
-                      // />
-
-                      "Hello"
-                    // ))
-                  }
-
-                  {!isTyping &&
-                    completedHabits.length > 0 &&
-                    habitListItems.map((habit) => (
-                      // <TableItem
-                      // 	onDeleteHandler={(event) => onHabitDelete([habit._id])}
-                      // 	onCheckedHandler={() => handleCheckChange(habit._id)}
-                      // 	isChecked={habit.checked!}
-                      // 	key={habit._id}
-                      // 	habit={habit}
-                      // />
+                <tbody className="overflow-x-visibleh-6 max-h-12">
+                  {isTyping &&
+                    searchedHabits.length > 0 &&
+                    searchedHabits.map((habit) => (
                       <TableItem
                         onCheckHandler={() => handleCheckChange(habit._id)}
                         isChecked={habit.checked!}
@@ -404,41 +406,68 @@ const Dashboard = () => {
                         key={habit._id}
                       />
                     ))}
-                  {completedHabits.length > 0 && (
-                    <tr>
-                      <td>
-                        <div className="py-5 bg-white flex flex-col xs:flex-row">
-                          <span className="text-xs xs:text-sm text-gray-900">
-                            Showing 1 to 4 of 50 Entries
-                          </span>
-                          <div className="inline-flex mt-2 xs:mt-0">
-                            <button className="text-sm text-indigo-50 transition duration-150 hover:bg-[#49bb97] bg-[#52cca5] font-semibold py-2 px-4 rounded-l">
-                              Prev
-                            </button>
-                            &nbsp; &nbsp;
-                            <button className="text-sm text-indigo-50 transition duration-150 hover:bg-[#49bb97] bg-[#52cca5] font-semibold py-2 px-4 rounded-r">
-                              Next
-                            </button>
+
+                  {!isTyping &&
+                    completedHabits.length > 0 &&
+                    currentHabits.map((habit) => (
+                      <TableItem
+                        onCheckHandler={() => handleCheckChange(habit._id)}
+                        isChecked={habit.checked!}
+                        deleteHabitHandler={(event) =>
+                          onHabitDelete([habit._id])
+                        }
+                        habit={habit}
+                        key={habit._id}
+                      />
+                    ))}
+                  {userInput.current !== null &&
+                    !userInput.current!.value &&
+                    completedHabits.length > 0 && (
+                      <tr>
+                        <td>
+                          <div className="py-5 bg-white flex flex-col xs:flex-row">
+                            <span className="text-xs xs:text-sm text-gray-900">
+                              Showing {currentPage} of {totalPages}
+                            </span>
+                            <div className="inline-flex mt-2 xs:mt-0">
+                              <button
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 1}
+                                className={clsx(
+                                  "text-sm text-indigo-50 transition duration-150 hover:bg-[#49bb97] bg-[#52cca5] font-semibold px-4  py-1 rounded-l cursor-pointer",
+                                  {
+                                    "bg-gray-300": currentPage === 1,
+                                    "text-gray-600": currentPage === 1,
+                                    "hover:!bg-gray-300": currentPage === 1,
+                                  }
+                                )}
+                              >
+                                Prev
+                              </button>
+                              &nbsp; &nbsp;
+                              <button
+                                onClick={handleNextPage}
+                                disabled={currentPage === totalPages}
+                                className={clsx(
+                                  "text-sm text-indigo-50 transition duration-150 hover:bg-[#49bb97] bg-[#52cca5] font-semibold px-4 py-1 rounded-l cursor-pointer",
+                                  {
+                                    "bg-gray-300": currentPage === totalPages,
+                                    "text-gray-600": currentPage === totalPages,
+                                    "hover:!bg-gray-300":
+                                      currentPage === totalPages,
+                                  }
+                                )}
+                              >
+                                Next
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
+                        </td>
+                      </tr>
+                    )}
                 </tbody>
               </table>
-              {/* {completedHabits.length > 5 && (
-                <p className="text-gray-500 mt-6 pl-4 text-sm">
-                  {" "}
-                  showing 5 out of {completedHabits.length} Habits
-                </p>
-              )}{" "} */}
-              {completedHabits && completedHabits.length > 5 && (
-                <p className="text-gray-500 mt-6 pl-4 text-sm">
-                  {" "}
-                  showing {completedHabits.length} out of{" "}
-                  {completedHabits.length} Habits
-                </p>
-              )}
+
               {!completedHabits.length && (
                 <div className="text-center text-sm text-gray-400 py-16 flex items-center justify-center">
                   <span>Habit completed will be shown here.</span>
@@ -446,7 +475,7 @@ const Dashboard = () => {
               )}
               {isTyping && !searchedHabits.length && (
                 <div className="text-center text-sm text-gray-400 py-16 flex items-center justify-center">
-                  <span>Your search did not match any habit.</span>
+                  <span>Your search did not match anything.</span>
                 </div>
               )}
             </div>
