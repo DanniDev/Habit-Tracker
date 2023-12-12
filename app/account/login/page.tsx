@@ -10,8 +10,12 @@ import { toast } from "react-toastify";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ClipLoader from "react-spinners/ClipLoader";
 import oAuthPopupWindow from "@/app/util/oAuthPopupWindow";
+import { setStatus, setUser } from "@/lib/redux/slices/userSlice";
+import { useAppDispatch } from "@/lib/redux/hook";
 
 export default function LoginPage() {
+  const dispatch = useAppDispatch();
+
   const router = useRouter();
   const pathname = usePathname();
   let params = useSearchParams();
@@ -24,20 +28,26 @@ export default function LoginPage() {
 
   const { data: session, status } = useSession();
 
-  useEffect(() => {
-    console.log("sesion", session);
-    console.log("status", status);
-
-    if (status !== "loading" && session) {
-      router.push(redirectUrl!, { scroll: false });
-    }
-  }, [status, session, redirectUrl, router]);
-
   const [loading, setLoading] = useState(false);
   const [userInput, setUserInput] = useState({
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    if (status !== "loading" && session) {
+      dispatch(
+        setUser({
+          _id: session?.user.id!,
+          name: session?.user.name!,
+          email: session?.user.email!,
+          picture: session?.user.picture!,
+          provider: session?.user.provider!,
+        })
+      );
+      router.push(redirectUrl!, { scroll: false });
+    }
+  }, [status, session, redirectUrl, router, loading]);
 
   const { email, password } = userInput;
 
@@ -52,6 +62,7 @@ export default function LoginPage() {
   const onSubmitHandler = async (event: FormEvent) => {
     event.preventDefault();
     setLoading(true);
+    dispatch(setStatus("pending"));
 
     try {
       let res = await signIn("credentials", {
@@ -63,6 +74,7 @@ export default function LoginPage() {
 
       if (res?.error) {
         setLoading(false);
+        dispatch(setStatus("failed"));
         if (res.error === "CredentialsSignin") {
           toast.error("Something went wrong, please try again!");
           router.push(pathname);
@@ -70,11 +82,13 @@ export default function LoginPage() {
           toast.error(res.error);
         }
       } else {
+        dispatch(setStatus("success"));
         setLoading(false);
         toast.success("You have successfully logged in");
       }
     } catch (error: any) {
       console.log(error);
+      dispatch(setStatus("failed"));
       setLoading(false);
       toast.error("Something went wrong, please try again!");
     }

@@ -3,8 +3,9 @@ export interface userType {
   name: string;
   email: string;
   password: string;
-  picture?: string;
+  picture: string;
   isVerified: boolean;
+  provider?: string;
   passwordReset: {
     verifyToken: string;
     expiryDate: Date;

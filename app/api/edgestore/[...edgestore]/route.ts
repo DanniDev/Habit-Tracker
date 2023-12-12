@@ -9,12 +9,11 @@ const edgeStoreRouter = es.router({
   publicFiles: es.fileBucket(),
   publicImages: es
     .imageBucket({
-      maxSize: 1024 * 1024 * 10,
-      accept: ["image/png"],
+      maxSize: 1024 * 1024 * 3,
     })
-    .beforeUpload(({ ctx, input, fileInfo }) => {
-      // console.log("beforeUpload", ctx, input, fileInfo);
-      return true; // allow upload
+    .beforeDelete(({ ctx, fileInfo }) => {
+      console.log("beforeDelete", ctx, fileInfo);
+      return true; // allow delete
     }),
 });
 const handler = createEdgeStoreNextHandler({

@@ -72,8 +72,7 @@ const Dashboard = () => {
     if (sessionStatus !== "loading" && !session) {
       router.push("/account/login", { scroll: false });
     }
-    // if (session) {
-    // }
+
     fetchHabits();
   }, [session, sessionStatus, dispatch, router]);
 
@@ -221,8 +220,6 @@ const Dashboard = () => {
 
       const { data } = res;
 
-      console.log(data);
-
       dispatch(deleteHabit(data.deletedHabitIds));
       dispatch(setStatus("onDeleteHabitSuccess"));
 
@@ -242,8 +239,6 @@ const Dashboard = () => {
   const currentHabits = completedHabits.slice(startIndex, endIndex);
 
   const totalPages = Math.ceil(completedHabits.length / itemsPerPage);
-
-  console.log("totalpages =>", totalPages);
 
   const handleNextPage = () => {
     dispatch(setPage(Math.min(currentPage + 1, totalPages)));

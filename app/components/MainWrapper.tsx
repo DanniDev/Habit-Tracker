@@ -7,7 +7,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { FaRegFaceDizzy } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import { usePathname } from "next/navigation";
-import Sidenav from "./Sidebar";
+import Sidebar from "./Sidebar";
 import HabitItem from "./HabitListItem";
 import AddHabitModal from "./AddHabitModal";
 import Dashboard from "./Dashboard";
@@ -69,7 +69,7 @@ export default function MainWrapper() {
   return (
     <>
       <div className="mx-auto bg-[#f0f0f0] w-full pt-0 p-6 pl-0 pr-2 pb-0 overflow-x-auto fixed ">
-        <Sidenav />
+        <Sidebar />
         <div className="pl-[170px] ">
           <div className="p-10 pt-6 px-4 pl-8 h-screen  min-w-[1080px] w-full overflow-y-auto pb-[10px]">
             {(pathname === "/dashboard" || pathname === "/") && <Dashboard />}

@@ -3,6 +3,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./components/AuthProvider";
 import { ToastContainer } from "react-toastify";
 import { EdgeStoreProvider } from "@/lib/edgestore/edgestore";
+import ReduxProvider from "@/lib/redux/ReduxProvider";
+
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Habit Tracker",
@@ -16,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className={inter.className}>
         <ToastContainer />
         <AuthProvider>
           <EdgeStoreProvider>{children}</EdgeStoreProvider>

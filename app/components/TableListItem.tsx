@@ -1,6 +1,7 @@
 import React from "react";
 import { NewHabitProps } from "../types/habit.model";
 import { MdDelete } from "react-icons/md";
+import moment from "moment";
 
 export default function TableListItem(props: {
   isChecked: boolean;
@@ -33,7 +34,9 @@ export default function TableListItem(props: {
         </p>
       </td>
       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-        <p className="text-gray-900 whitespace-no-wrap">{habit.completedAt}</p>
+        <p className="text-gray-900 whitespace-no-wrap">
+          {moment(new Date(habit.completedAt!)).fromNow()}
+        </p>
       </td>
       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
         <button

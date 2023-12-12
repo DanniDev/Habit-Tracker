@@ -26,10 +26,10 @@ const userSlice = createSlice({
     updateUser: (state, action: PayloadAction<typeof state.user>) => {
       state.user = action.payload;
     },
-    resetUser: (state, action: PayloadAction<typeof state.user>) => {
+    resetUser: (state, action: PayloadAction<string>) => {
       state.user = null;
     },
-    deleteUser: (state, action: PayloadAction<typeof state.user>) => {
+    deleteUser: (state, action: PayloadAction<string>) => {
       state.user = null;
     },
   },

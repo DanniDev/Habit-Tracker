@@ -1,6 +1,5 @@
 import React from "react";
 import logo2 from "@/public/images/logo2.png";
-import userPicture from "@/public/images/user.jpg";
 import Image from "next/image";
 import { RxDashboard } from "react-icons/rx";
 import { AiOutlinePieChart } from "react-icons/ai";
@@ -10,24 +9,35 @@ import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
 import { signOut } from "next-auth/react";
 import { toast } from "react-toastify";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hook";
+import { resetUser } from "@/lib/redux/slices/userSlice";
+import avatar from "@/public/images/user.png";
 
 export default function Sidebar() {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.userInfo.user);
+
   let pathname = usePathname();
   pathname = pathname.toLocaleLowerCase();
   const router = useRouter();
 
   const logoutHandler = async () => {
-    const data = await signOut({
-      redirect: false,
-      callbackUrl: "/account/login",
-    });
-
-    toast.success("You have logout successfully!");
-    router.push(data.url);
+    try {
+      const data = await signOut({
+        redirect: false,
+        callbackUrl: "/account/login",
+      });
+      dispatch(resetUser(""));
+      toast.success("You have logout successfully!");
+      router.push(data.url);
+    } catch (error: any) {
+      console.log(error.message);
+      toast.error("Something went wrong!");
+    }
   };
 
   return (
-    <div className="w-[190px] bg-[#f0f0f0] fixed h-screen pl-3 pr-4 z-[888]">
+    <div className="w-[190px] bg-[#fff] fixed h-screen pl-3 pr-4 z-[888]">
       <div className="pt-5 flex items-center">
         <Image src={logo2.src} height={50} width={50} alt="Habit Mentor" />
         <h1 className="font-bold text-[25px] text-[#52cca5]">Habit X</h1>
@@ -73,12 +83,12 @@ export default function Sidebar() {
 
       <div className="absolute bottom-10 left-5">
         <div className="flex items-center space-x-4">
-          <div className="flex-shrink-0 w-12 h-12 overflow-hidden rounded-full">
+          <div className="w-12 h-12 overflow-hidden rounded-full">
             <Link href="/account/user/profile">
               <Image
                 width={80}
                 height={80}
-                src={userPicture.src}
+                src={user?.picture! || avatar.src}
                 alt="User Picture"
                 className="object-cover w-full h-full"
               />
@@ -87,8 +97,8 @@ export default function Sidebar() {
           <div>
             <div>
               <Link href="/account/user/profile">
-                <h3 className="text-sm font-medium text-gray-800 pb-1 pt-2">
-                  Daniel Agyei
+                <h3 className="text-sm font-medium text-gray-800 pb-1 ">
+                  {user?.name}
                 </h3>
               </Link>
             </div>

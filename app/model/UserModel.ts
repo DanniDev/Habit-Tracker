@@ -17,6 +17,9 @@ const userSchema = new Schema<userType>({
   picture: {
     type: String,
   },
+  provider: {
+    type: String,
+  },
   isVerified: {
     type: Boolean,
     default: false,

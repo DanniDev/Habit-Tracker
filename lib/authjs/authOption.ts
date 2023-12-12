@@ -32,6 +32,7 @@ const authOption: NextAuthOptions = {
           placeholder: "your email",
         },
         password: { label: "Password", type: "password" },
+        oldPassword: { label: "Old Password", type: "password" },
         usertype: { label: "usertype", type: "text" },
       },
       async authorize(credentials, req) {
@@ -41,7 +42,8 @@ const authOption: NextAuthOptions = {
         try {
           await connectDB();
 
-          const { usertype, email, password, username } = credentials!;
+          const { usertype, email, password, username, oldPassword } =
+            credentials!;
 
           //check if user exist in DB
           const foundUser = await User.findOne({ email });
@@ -57,6 +59,7 @@ const authOption: NextAuthOptions = {
               email,
               password: hashedPassword,
               name: username,
+              provider: "credentials",
               picture: "",
             });
 
@@ -93,6 +96,7 @@ const authOption: NextAuthOptions = {
               isVerified: updatedUser.isVerified,
               email: updatedUser.email,
               name: updatedUser.name,
+              provider: updatedUser.provider,
               picture: updatedUser.picture,
             };
             return user;
@@ -110,6 +114,7 @@ const authOption: NextAuthOptions = {
               return {
                 id: foundUser._id,
                 email: foundUser.email,
+                provider: foundUser.provider,
                 isVerified: foundUser.isVerified,
                 name: foundUser.name,
                 picture: foundUser.picture,
@@ -119,6 +124,34 @@ const authOption: NextAuthOptions = {
             return {
               error: "Invalid email or password!",
             };
+          } else if (usertype === "updateUser") {
+            if (foundUser) {
+              const hashedPassword = await encryptPassword(password);
+
+              const correctPassword = await verifyPassword(
+                oldPassword,
+                foundUser.password
+              );
+              if (correctPassword) {
+                const updatedUser = await User.findOneAndUpdate(
+                  { email },
+                  {
+                    $set: { password: hashedPassword, name: username },
+                  },
+                  { new: true }
+                );
+
+                return {
+                  id: updatedUser._id,
+                  email: updatedUser.email,
+                  name: updatedUser.name,
+                  provider: updatedUser.provider,
+                  picture: updatedUser.picture,
+                };
+              } else {
+                return { error: "Invalid user password!" };
+              }
+            }
           } else {
             return null;
           }
@@ -130,9 +163,7 @@ const authOption: NextAuthOptions = {
   ],
 
   callbacks: {
-    async signIn({ user, email, profile, account, credentials }) {
-      // console.log('profile =>', profile);
-
+    async signIn({ user, email, profile, account }) {
       if (account?.provider === "credentials") {
         if (user?.error) {
           throw Error(user?.error);
@@ -152,8 +183,9 @@ const authOption: NextAuthOptions = {
             const newUser = new User({
               email: user.email,
               password: "",
+              provider: account?.provider,
               name: user.name,
-              picture: user.picture,
+              picture: user.image,
             });
 
             newUser.passwordReset.expiryDate = null;
@@ -176,9 +208,12 @@ const authOption: NextAuthOptions = {
       return { ...token, ...user };
     },
     async session({ session, token, user }) {
-      session.user.id = token.id as string;
-      session.user.picture = token.picture!;
-      session.user.isVerified = token.isVerified as boolean;
+      const fetchedUser = await User.findOne({ email: token.email });
+
+      session.user.id = fetchedUser._id as string;
+      session.user.picture = fetchedUser.picture!;
+      session.user.provider = fetchedUser.provider!;
+      session.user.isVerified = fetchedUser.isVerified as boolean;
       return session;
     },
   },

@@ -1,11 +1,13 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
+import ReduxProvider from "@/lib/redux/ReduxProvider";
 
-import React from 'react'
-import Session from "redux-persist/lib/storage/session";
+import React from "react";
 
-export const AuthProvider = ({children} : {children:React.ReactNode}) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return (
-    <SessionProvider>{children}</SessionProvider>
-  )
-}
+    <SessionProvider>
+      <ReduxProvider>{children}</ReduxProvider>
+    </SessionProvider>
+  );
+};
